@@ -28,5 +28,10 @@ fn main() {
 
     println!("{:?}", s0.chars());
     println!("{:?}", s0.chars().nth(0));
-    println!("{:?}", s0.chars().nth(0).unwrap_or('ı'));
+    println!("{:?}", s0.chars().nth(5).unwrap_or('ı'));
+
+    let chars: Vec<char> = s0.chars().collect();
+    println!("{:?}", chars);
+    println!("{:?}", chars[0]);
+    println!("Length of vector chars = {}", chars.len());
 }
