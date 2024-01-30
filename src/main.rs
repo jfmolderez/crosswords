@@ -1,19 +1,15 @@
-
-use crosswords::initial_grid::init_grid ;
+use crosswords::grid::init_grid;
 
 fn main() {
-    let grid = init_grid();
+    let start_grid = init_grid();
+    start_grid.print();
 
-    let result = 1 + 1;
-    println!("{}", result);
+    let s0 = start_grid.get_line(0);
+    println!("{}", s0);
 
-    let hello = "hello".to_string();
-    println!("Length of {} = {}", hello, hello.len());
-
-    println!("{:?}", grid);
-
-    let mut s0 = grid[0].clone();
-    s0.push_str(" IS HAPPY!");
+    /* 
+    let mut s0 = String::from("DOG");
+    s0.to_string().push_str(" IS HAPPY!");
     println!("{}", s0);
 
     println!("{:?}", s0.find("HAPPY"));
@@ -27,4 +23,9 @@ fn main() {
     println!("{:?}", chars);
     println!("{:?}", chars[0]);
     println!("Length of vector chars = {}", chars.len());
+
+    let hello = "hello".to_string();
+    println!("Length of {} = {}", hello, hello.len());
+    */
+
 }
