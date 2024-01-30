@@ -13,7 +13,8 @@
 			"extensions": [
 				"rust-lang.rust-analyzer",
 				"GitHub.copilot",
-				"ms-vscode.makefile-tools"
+				"ms-vscode.makefile-tools",
+				"github.vscode-github-actions"
 			]
 		}
 	}

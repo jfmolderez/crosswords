@@ -1,25 +1,18 @@
 
+use crosswords::initial_grid::init_grid ;
 
 fn main() {
-    let puzzle = [
-        String::from("DOG...."),
-        String::from("---...."),
-        String::from("----..."),
-        String::from("-------"),
-        String::from("...----"),
-        String::from("....---"),
-        String::from("....CAT"),
-    ];
+    let grid = init_grid();
 
     let result = 1 + 1;
     println!("{}", result);
 
     let hello = "hello".to_string();
-    println!("Length of {} = {}", hello, hello.len())  ; 
+    println!("Length of {} = {}", hello, hello.len());
 
-    println!("{:?}", puzzle);
+    println!("{:?}", grid);
 
-    let mut s0 = puzzle[0].clone();
+    let mut s0 = grid[0].clone();
     s0.push_str(" IS HAPPY!");
     println!("{}", s0);
 
