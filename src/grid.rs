@@ -1,4 +1,4 @@
-use crosswords::utils::read_words;
+use crate::utils::read_words;
 
 #[derive(Debug)]
 pub struct Grid {
@@ -77,6 +77,6 @@ pub fn initial_grid() -> Grid {
 /// assert_eq!(grid.get_line(0), "DOG....");
 /// ```
 pub fn read_grid(filename: &str) -> Grid {
-    let mut puzzle: Vec<String> = read_words(filename);
+    let puzzle: Vec<String> = read_words(filename);
     Grid::new(puzzle)
 }

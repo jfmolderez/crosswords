@@ -1,4 +1,5 @@
 use crosswords::grid::{initial_grid, read_grid};
+use crosswords::words::Library;
 
 fn main() {
     let start_grid = initial_grid();
@@ -9,6 +10,9 @@ fn main() {
 
     let start_grid = read_grid("./data/initial.txt");
     start_grid.print();
+
+    let lib = Library::load("./data/lib/top_12000.txt");
+    println!("Size of the library = {}", lib.size());
 
     // process_lib()
 
