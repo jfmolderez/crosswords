@@ -1,6 +1,4 @@
-
-use std::fs::File;
-use std::io::{BufRead, BufReader};
+use crosswords::utils::read_words;
 
 #[derive(Debug)]
 pub struct Grid {
@@ -79,15 +77,6 @@ pub fn initial_grid() -> Grid {
 /// assert_eq!(grid.get_line(0), "DOG....");
 /// ```
 pub fn read_grid(filename: &str) -> Grid {
-    let mut puzzle: Vec<String> = Vec::new();
-    let file = File::open(filename).expect("File not found!");
-
-    let reader = BufReader::new(file);
-    for line in reader.lines() {
-        match line {
-            Ok(line) => puzzle.push(line),
-            Err(e) => println!("Error rezading line: {}", e),
-        }
-    }
+    let mut puzzle: Vec<String> = read_words(filename);
     Grid::new(puzzle)
 }

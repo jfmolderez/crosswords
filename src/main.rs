@@ -10,7 +10,7 @@ fn main() {
     let start_grid = read_grid("./data/initial.txt");
     start_grid.print();
 
-    process_lib()
+    // process_lib()
 
     /* 
     let mut s0 = String::from("DOG");
@@ -35,6 +35,7 @@ fn main() {
 
 }
 
+/* 
 use std::fs::File;
 use std::io::{Write, BufRead, BufReader};
 
@@ -62,3 +63,4 @@ fn process_lib() {
         }
     }
 }
+*/
