@@ -10,6 +10,8 @@ fn main() {
     let start_grid = read_grid("./data/initial.txt");
     start_grid.print();
 
+    process_lib()
+
     /* 
     let mut s0 = String::from("DOG");
     s0.to_string().push_str(" IS HAPPY!");
@@ -31,4 +33,32 @@ fn main() {
     println!("Length of {} = {}", hello, hello.len());
     */
 
+}
+
+use std::fs::File;
+use std::io::{Write, BufRead, BufReader};
+
+fn process_lib() {
+    
+    let input_file = File::open("./data/lib/20k.txt").expect("File not found!");
+    let mut output_file = File::create("./data/lib/top_12000.txt").expect("File not found!");
+
+    let reader = BufReader::new(input_file);
+    for (i, line) in reader.lines().enumerate() {
+        if i == 11999 {
+            match line {
+                Ok(line) => {
+                    write!(output_file, "{}", line).expect("Unable to write data");   
+                },
+                Err(e) => println!("Error rezading line: {}", e),
+            }            
+            break;
+        }
+        match line {
+            Ok(line) => {
+                writeln!(output_file, "{}", line).expect("Unable to write data");   
+            },
+            Err(e) => println!("Error rezading line: {}", e),
+        }
+    }
 }
