@@ -1,11 +1,14 @@
-use crosswords::grid::init_grid;
+use crosswords::grid::{initial_grid, read_grid};
 
 fn main() {
-    let start_grid = init_grid();
+    let start_grid = initial_grid();
     start_grid.print();
 
     let s0 = start_grid.get_line(0);
     println!("{}", s0);
+
+    let start_grid = read_grid("./data/initial.txt");
+    start_grid.print();
 
     /* 
     let mut s0 = String::from("DOG");

@@ -1,3 +1,7 @@
+
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+
 #[derive(Debug)]
 pub struct Grid {
     grid: Vec<String>,
@@ -5,7 +9,9 @@ pub struct Grid {
 
 impl Grid {
     pub fn new(grid: Vec<String>) -> Self {
-        Self { grid }
+        let gr = Self { grid };
+        gr.check();
+        gr
     }
 
     pub fn size(&self) -> (usize, usize) {
@@ -24,7 +30,7 @@ impl Grid {
         &self.grid[row]
     }
 
-    pub fn check(&self) -> bool {
+    fn check(&self) -> bool {
         let cols = self.grid[0].len();
 
         for row in &self.grid {
@@ -47,11 +53,11 @@ impl Grid {
 /// representing the initial grid.
 /// # Example:
 /// ```
-/// use crosswords::grid::init_grid;
-/// let grid = init_grid();
+/// use crosswords::grid::initial_grid;
+/// let grid = initial_grid();
 /// assert_eq!(grid.get_line(0), "DOG....");
 /// ```
-pub fn init_grid() -> Grid {
+pub fn initial_grid() -> Grid {
     let puzzle = [
         String::from("DOG...."),
         String::from("---...."),
@@ -62,4 +68,26 @@ pub fn init_grid() -> Grid {
         String::from("....CAT"),
     ];
     Grid::new(puzzle.to_vec())
+}
+
+/// Returns a grid object containing a vector of strings
+/// read from a file.
+/// # Example:
+/// ```
+/// use crosswords::grid::read_grid;
+/// let grid = read_grid("./data/initial.txt");
+/// assert_eq!(grid.get_line(0), "DOG....");
+/// ```
+pub fn read_grid(filename: &str) -> Grid {
+    let mut puzzle: Vec<String> = Vec::new();
+    let file = File::open(filename).expect("File not found!");
+
+    let reader = BufReader::new(file);
+    for line in reader.lines() {
+        match line {
+            Ok(line) => puzzle.push(line),
+            Err(e) => println!("Error rezading line: {}", e),
+        }
+    }
+    Grid::new(puzzle)
 }
