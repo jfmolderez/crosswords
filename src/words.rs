@@ -19,7 +19,10 @@ impl Library {
     }
 
     pub fn load(filename: &str) -> Self {
-        let words = read_words(filename);
+        let mut words = read_words(filename);
+        for word in &mut words {
+            word.make_ascii_uppercase();
+        }
         Self::new(words)
     }
 
@@ -30,6 +33,18 @@ impl Library {
     pub fn get_word(&self, i: usize) -> String {
         assert!(i < self.size());
         self.words[i].clone()
+    }
+
+    pub fn is_word(&self, word: &str) -> bool {
+        self.words.contains(&word.to_string())
+    }
+
+    pub fn print_stats(&self) {
+        let mut lens: Vec<usize> = self.stats.keys().cloned().collect();
+        lens.sort();
+        for len in lens {
+            println!("[{}] {}", len, self.stats[&len]);
+        }
     }
  
 }

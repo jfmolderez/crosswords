@@ -14,6 +14,8 @@ fn main() {
     let lib = Library::load("./data/lib/top_12000.txt");
     println!("Size of the library = {}", lib.size());
 
+    lib.print_stats();
+
     // process_lib()
 
     /* 
