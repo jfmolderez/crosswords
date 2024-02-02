@@ -1,5 +1,5 @@
 use crosswords::grid::{initial_grid, read_grid};
-use crosswords::words::Library;
+use crosswords::library::Library;
 
 fn main() {
     let start_grid = initial_grid();
@@ -15,6 +15,9 @@ fn main() {
     println!("Size of the library = {}", lib.size());
 
     lib.print_stats();
+
+    let words = lib.find_words("D--");
+    println!("{:?}", words);
 
     // process_lib()
 

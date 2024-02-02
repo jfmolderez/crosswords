@@ -1,16 +1,18 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use crate::utils::read_words;
 
 #[derive(Debug)]
 pub struct Library {
-    words: Vec<String>,
+    words: HashSet<String>,
     stats: HashMap<usize, usize>,
 }
 
 impl Library {
-    pub fn new(words: Vec<String>) -> Self {
+    pub fn new(ws: Vec<String>) -> Self {
+        let mut words = HashSet::new();
         let mut stats = HashMap::new();
-        for word in &words {
+        for word in &ws {
+            words.insert(word.clone());
             let len = word.len();
             let count = stats.entry(len).or_insert(0);
             *count += 1;
@@ -30,13 +32,27 @@ impl Library {
         self.words.len()
     }
 
-    pub fn get_word(&self, i: usize) -> String {
-        assert!(i < self.size());
-        self.words[i].clone()
-    }
-
     pub fn is_word(&self, word: &str) -> bool {
         self.words.contains(&word.to_string())
+    }
+
+    pub fn find_words(&self, pattern: &str) -> Vec<String> {
+        let mut res : Vec<String> = Vec::new();
+        let length = pattern.len();
+        for word in &self.words {
+            let mut tmp = word.clone();
+            if tmp.len() == length {
+                for i in 0..length {
+                    if pattern.chars().nth(i).unwrap() == '-' {
+                        tmp.replace_range(i..i+1, "-");
+                    }
+                }
+                if tmp == pattern {
+                    res.push(word.clone());
+                }
+            }
+        }
+        res
     }
 
     pub fn print_stats(&self) {

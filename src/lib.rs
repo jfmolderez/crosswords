@@ -1,3 +1,3 @@
 pub mod utils;
 pub mod grid;
-pub mod words;
+pub mod library;
