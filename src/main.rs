@@ -16,8 +16,7 @@ fn main() {
 
     lib.print_stats();
 
-    let words = lib.find_words("D--");
-    println!("{:?}", words);
+   
 
     // process_lib()
 
