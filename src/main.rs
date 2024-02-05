@@ -16,6 +16,13 @@ fn main() {
 
     lib.print_stats();
 
+    let word = lib.get_word(876);
+    println!("Word 876 = {}", word);
+
+    let dog_result = lib.find_word("D-G");
+    println!("DOG result = {:?}", dog_result);
+    
+
    
 
     // process_lib()

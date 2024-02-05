@@ -8,9 +8,13 @@ pub fn read_words(filename: &str) -> Vec<String> {
     let reader = BufReader::new(file);
     for line in reader.lines() {
         match line {
-            Ok(line) => res.push(line),
-            Err(e) => println!("Error rezading line: {}", e),
+            Ok(line) => res.push(line.trim().to_string()),
+            Err(e) => println!("Error reading line: {}", e),
         }
     }
     res
 }
+
+
+
+
