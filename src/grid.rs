@@ -1,4 +1,5 @@
-use crate::utils::read_words;
+use std::fs::File;
+use std::io::{BufRead, BufReader};
 
 #[derive(Debug)]
 pub struct Grid {
@@ -77,6 +78,18 @@ pub fn initial_grid() -> Grid {
 /// assert_eq!(grid.get_line(0), "DOG....");
 /// ```
 pub fn read_grid(filename: &str) -> Grid {
-    let puzzle: Vec<String> = read_words(filename);
-    Grid::new(puzzle)
+    let mut res: Vec<String> = Vec::new();
+    let file = File::open(filename).expect("File not found!");
+
+    let reader = BufReader::new(file);
+    for line in reader.lines() {
+        match line {
+            Ok(line) => res.push(line.trim().to_string()),
+            Err(e) => println!("Error reading line: {}", e),
+        }
+    }
+    Grid::new(res)
 }
+
+
+
