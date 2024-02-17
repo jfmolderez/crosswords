@@ -1,4 +1,4 @@
-use crosswords::grid::{initial_grid, read_grid};
+use crosswords::grid::{initial_grid, read_grid, Point, Span};
 use crosswords::library::Library;
 
 fn main() {
@@ -20,7 +20,20 @@ fn main() {
     println!("Word 876 = {}", word);
 
     let dog_result = lib.find_word("D-G");
-    println!("DOG result = {:?}", dog_result);
+    println!("D_G result = {:?}", dog_result);
+
+    let p1 = Point::new(3, 4);
+    println!("Point 1 = {:?}", p1);
+
+    let s1 = Span::new(p1, 5, true);
+    println!("Span 1 = {:?}", s1);
+
+    let mut p = Point::new(0, 0);
+    println!("{:?} : {}", p, start_grid.is_block(&p));
+    while start_grid.next(&mut p, true) {
+        println!("{:?} : {}", p, start_grid.is_block(&p));
+    }
+
     
 
    

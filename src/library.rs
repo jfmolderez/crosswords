@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone)]
 pub struct Word {
     word: &'static str,
 }
@@ -30,13 +30,13 @@ fn read_words(filename: &str) -> Vec<Word> {
 
 
 #[derive(Debug)]
-pub struct Library<'a> {
+pub struct Library {
     words: Vec<Word>,
-    word_map: HashMap<String, Vec<&'a str>>,
+    word_map: HashMap<String, Vec<Word>>,
     stats: HashMap<usize, usize>,
 }
 
-impl<'a> Library<'a> {
+impl Library {
     pub fn new(words: Vec<Word>) -> Self {
         let mut stats = HashMap::new();
         let mut word_map = HashMap::new();
@@ -46,10 +46,13 @@ impl<'a> Library<'a> {
             let count = stats.entry(word.len()).or_insert(0);
             *count += 1;
 
+            if word.len() > 7 {
+                continue;
+            }
             let patterns = Self::create_pattern_hash(&w); 
             for pattern in patterns {
                 let ws = word_map.entry(pattern).or_insert(Vec::new());
-                ws.push(word);
+                ws.push(w);
             }
         }
 
@@ -93,7 +96,7 @@ impl<'a> Library<'a> {
         self.words[i].word
     }
 
-    pub fn find_word(&self, pattern: &str) -> Vec<&str> {
+    pub fn find_word(&self, pattern: &str) -> Vec<Word> {
         match self.word_map.get(pattern) {
             Some(words) => words.clone(),
             None => Vec::new(),

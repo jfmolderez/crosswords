@@ -2,13 +2,40 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 
 #[derive(Debug)]
+pub struct Point {
+    row: usize,
+    col: usize,
+}
+
+impl Point {
+    pub fn new(row: usize, col: usize) -> Self {
+        Self { row, col }
+    }
+}
+
+#[derive(Debug)]
+pub struct Span {
+    start: Point,
+    size: usize,
+    vertical: bool, // false = horizontal, true = vertical
+}
+
+impl Span {
+    pub fn new(start: Point, size: usize, vertical: bool) -> Self {
+        Self { start, size, vertical }
+    }
+}
+
+#[derive(Debug)]
 pub struct Grid {
     grid: Vec<String>,
+    spans: Vec<Span>,
 }
 
 impl Grid {
     pub fn new(grid: Vec<String>) -> Self {
-        let gr = Self { grid };
+        let spans = get_spans(&grid);
+        let gr = Self { grid, spans };
         gr.check();
         gr
     }
@@ -29,6 +56,39 @@ impl Grid {
         &self.grid[row]
     }
 
+    fn in_bounds(&self, p: &Point) -> bool {
+        p.row < self.rows() && p.col < self.cols()
+    }
+
+    pub fn next(&self, p: &mut Point, vertical: bool) -> bool {
+        if vertical {
+           p.row += 1;
+           if p.row >= self.rows() {
+               p.row = 0;
+               p.col += 1;
+           }
+        } else {
+            p.col += 1;
+            if p.col >= self.cols() {
+                p.col = 0;
+                p.row += 1;
+            }
+        }
+        self.in_bounds(p)
+    }
+
+    pub fn is_block(&self, p: &Point) -> bool {
+        self.grid[p.row].chars().nth(p.col).unwrap() == '.'
+    }
+
+    fn is_blank(&self, p: &Point) -> bool {
+        self.grid[p.row].chars().nth(p.col).unwrap() == '-'
+    }
+
+    fn is_letter(&self, p: &Point) -> bool {
+        self.grid[p.row].chars().nth(p.col).unwrap().is_alphabetic()
+    }
+
     fn check(&self) -> bool {
         let cols = self.grid[0].len();
 
@@ -46,6 +106,12 @@ impl Grid {
             println!("\t{}", row);
         }
     }
+}
+
+fn get_spans(grid: &Vec<String>) -> Vec<Span> {
+    let mut res: Vec<Span> = Vec::new();
+
+    res
 }
 
 /// Returns a grid object containing a vector of strings 
