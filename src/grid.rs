@@ -34,9 +34,11 @@ pub struct Grid {
 
 impl Grid {
     pub fn new(grid: Vec<String>) -> Self {
-        let spans = get_spans(&grid);
-        let gr = Self { grid, spans };
+        let spans = Vec::new();
+        let mut gr = Self { grid, spans };
         gr.check();
+
+        gr.fill_spans();        
         gr
     }
 
@@ -89,6 +91,38 @@ impl Grid {
         self.grid[p.row].chars().nth(p.col).unwrap().is_alphabetic()
     }
 
+    fn fill_spans(&mut self) {
+        assert!(self.spans.is_empty());
+        self.fill_spans_dir(false);
+        self.fill_spans_dir(true);
+    }
+
+    fn fill_spans_dir(&mut self, vertical: bool) {
+        let mut p = Point::new(0, 0);
+       
+        while self.in_bounds(&mut p) {
+            let mut p_loop = p;
+            while self.in_bounds(&p_loop) && self.is_block(&p_loop) {
+                self.next(&mut p_loop, vertical);
+            }
+            let start = p_loop;
+            let mut size = 0;
+            loop {
+                if !self.in_bounds(&p_loop) || self.is_block(&p_loop) {
+                    break;
+                }
+                size += 1;
+                self.next(&mut p_loop, vertical);
+            }
+            self.spans.push(Span::new(start, size, vertical));
+        }
+    
+    }
+
+    fn fill_spans_vertical(&mut self) {
+    
+    }
+
     fn check(&self) -> bool {
         let cols = self.grid[0].len();
 
@@ -108,11 +142,6 @@ impl Grid {
     }
 }
 
-fn get_spans(grid: &Vec<String>) -> Vec<Span> {
-    let mut res: Vec<Span> = Vec::new();
-
-    res
-}
 
 /// Returns a grid object containing a vector of strings 
 /// representing the initial grid.
