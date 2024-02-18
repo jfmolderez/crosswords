@@ -31,6 +31,8 @@ fn main() {
     let p = Point::new(0, 0);
     println!("{:?} : {}", p, start_grid.is_block(p.clone()));
 
+    // println!("{:?}", start_grid.spans);
+
 }
 
 
