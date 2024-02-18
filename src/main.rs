@@ -28,11 +28,11 @@ fn main() {
     let s1 = Span::new(p1, 5, true);
     println!("Span 1 = {:?}", s1);
 
-    let mut p = Point::new(0, 0);
-    println!("{:?} : {}", p, start_grid.is_block(&p));
-    while start_grid.next(&mut p, true) {
-        println!("{:?} : {}", p, start_grid.is_block(&p));
-    }
+    let p = Point::new(0, 0);
+    println!("{:?} : {}", p, start_grid.is_block(p.clone()));
+
+}
+
 
     
 
@@ -61,7 +61,7 @@ fn main() {
     println!("Length of {} = {}", hello, hello.len());
     */
 
-}
+
 
 /* 
 use std::fs::File;

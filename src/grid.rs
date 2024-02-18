@@ -1,7 +1,7 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Point {
     row: usize,
     col: usize,
@@ -58,36 +58,38 @@ impl Grid {
         &self.grid[row]
     }
 
-    fn in_bounds(&self, p: &Point) -> bool {
+    fn in_bounds(&self, p: Point) -> bool {
         p.row < self.rows() && p.col < self.cols()
     }
 
-    pub fn next(&self, p: &mut Point, vertical: bool) -> bool {
+    pub fn next(&self, p: Point, vertical: bool) -> Point {
+        let mut row = p.row;
+        let mut col = p.col;
         if vertical {
-           p.row += 1;
-           if p.row >= self.rows() {
-               p.row = 0;
-               p.col += 1;
+           row += 1;
+           if row >= self.rows() {
+               row = 0;
+               col += 1;
            }
         } else {
-            p.col += 1;
-            if p.col >= self.cols() {
-                p.col = 0;
-                p.row += 1;
+            col += 1;
+            if col >= self.cols() {
+                col = 0;
+                row += 1;
             }
         }
-        self.in_bounds(p)
+        Point::new(row, col)
     }
 
-    pub fn is_block(&self, p: &Point) -> bool {
+    pub fn is_block(&self, p: Point) -> bool {
         self.grid[p.row].chars().nth(p.col).unwrap() == '.'
     }
 
-    fn is_blank(&self, p: &Point) -> bool {
+    fn is_blank(&self, p: Point) -> bool {
         self.grid[p.row].chars().nth(p.col).unwrap() == '-'
     }
 
-    fn is_letter(&self, p: &Point) -> bool {
+    fn is_letter(&self, p: Point) -> bool {
         self.grid[p.row].chars().nth(p.col).unwrap().is_alphabetic()
     }
 
@@ -100,27 +102,27 @@ impl Grid {
     fn fill_spans_dir(&mut self, vertical: bool) {
         let mut p = Point::new(0, 0);
        
-        while self.in_bounds(&mut p) {
-            let mut p_loop = p;
-            while self.in_bounds(&p_loop) && self.is_block(&p_loop) {
-                self.next(&mut p_loop, vertical);
+        while self.in_bounds(p.clone()) {
+        
+            while self.in_bounds(p.clone()) && self.is_block(p.clone()) {
+                p = self.next(p, vertical);
             }
-            let start = p_loop;
+
+            if !self.in_bounds(p.clone()) {
+                return;
+            }
+            let start = p.clone();
             let mut size = 0;
-            loop {
-                if !self.in_bounds(&p_loop) || self.is_block(&p_loop) {
+
+            loop {               
+                if !self.in_bounds(p.clone()) || self.is_block(p.clone()) {
                     break;
                 }
                 size += 1;
-                self.next(&mut p_loop, vertical);
+                p = self.next(p, vertical);
             }
             self.spans.push(Span::new(start, size, vertical));
         }
-    
-    }
-
-    fn fill_spans_vertical(&mut self) {
-    
     }
 
     fn check(&self) -> bool {
