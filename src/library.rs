@@ -7,7 +7,7 @@ pub struct Word {
     word: &'static str,
 }
 
-fn read_words(filename: &str) -> Vec<Word> {
+fn read_words(filename: &str, max_size: usize) -> Vec<Word> {
     let mut res: Vec<Word> = Vec::new();
     let file = File::open(filename).expect("File not found!");
 
@@ -16,6 +16,9 @@ fn read_words(filename: &str) -> Vec<Word> {
         match line {
             Ok(line) => {
                 let mut str: String = line.trim().to_string();
+                if str.len() > max_size {
+                    continue;
+                }
                 str.make_ascii_uppercase();
                 let str: &'static str = Box::leak(str.into_boxed_str());
                 res.push(Word { word: str })
@@ -59,8 +62,8 @@ impl Library {
         Self { words: words , word_map, stats } 
     }
 
-    pub fn load(filename: &str) -> Self {
-        let words = read_words(filename);
+    pub fn load(filename: &str, max_size: usize) -> Self {
+        let words = read_words(filename, max_size);
         Self::new(words)
     }
 

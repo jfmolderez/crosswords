@@ -2,6 +2,7 @@ use crosswords::grid::{initial_grid, read_grid, Point, Span};
 use crosswords::library::Library;
 
 fn main() {
+
     let start_grid = initial_grid();
     start_grid.print();
 
@@ -10,8 +11,8 @@ fn main() {
 
     let start_grid = read_grid("./data/initial.txt");
     start_grid.print();
-
-    let lib = Library::load("./data/lib/top_12000.txt");
+ 
+    let lib = Library::load("./data/lib/top_12000.txt", start_grid.size());
     println!("Size of the library = {}", lib.size());
 
     lib.print_stats();
@@ -31,7 +32,12 @@ fn main() {
     let p = Point::new(0, 0);
     println!("{:?} : {}", p, start_grid.is_block(p.clone()));
 
-    // println!("{:?}", start_grid.spans);
+    println!("{:?}", start_grid.spans);
+
+    println!();
+    let test_grid = read_grid("./data/test.txt");
+    println!("{:?}", test_grid.spans.len());
+
 
 }
 

@@ -1,5 +1,6 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+use std::cmp;
 
 #[derive(Debug, Clone)]
 pub struct Point {
@@ -29,7 +30,7 @@ impl Span {
 #[derive(Debug)]
 pub struct Grid {
     grid: Vec<String>,
-    spans: Vec<Span>,
+    pub spans: Vec<Span>,
 }
 
 impl Grid {
@@ -42,8 +43,8 @@ impl Grid {
         gr
     }
 
-    pub fn size(&self) -> (usize, usize) {
-        (self.grid.len(), self.grid[0].len())
+    pub fn size(&self) -> usize {
+        cmp::max(self.grid.len(), self.grid[0].len())
     }
 
     pub fn rows(&self) -> usize {
@@ -62,7 +63,8 @@ impl Grid {
         p.row < self.rows() && p.col < self.cols()
     }
 
-    pub fn next(&self, p: Point, vertical: bool) -> Point {
+    fn next_stop_at_wrap(&self, p: Point, vertical: bool) -> (Point, bool) {
+        let mut wrap = false;
         let mut row = p.row;
         let mut col = p.col;
         if vertical {
@@ -70,15 +72,17 @@ impl Grid {
            if row >= self.rows() {
                row = 0;
                col += 1;
+               wrap = true;
            }
         } else {
             col += 1;
             if col >= self.cols() {
                 col = 0;
                 row += 1;
+                wrap = true;
             }
         }
-        Point::new(row, col)
+        (Point::new(row, col), wrap)
     }
 
     pub fn is_block(&self, p: Point) -> bool {
@@ -105,7 +109,7 @@ impl Grid {
         while self.in_bounds(p.clone()) {
         
             while self.in_bounds(p.clone()) && self.is_block(p.clone()) {
-                p = self.next(p, vertical);
+                (p, _) = self.next_stop_at_wrap(p, vertical);
             }
 
             if !self.in_bounds(p.clone()) {
@@ -113,13 +117,13 @@ impl Grid {
             }
             let start = p.clone();
             let mut size = 0;
-
-            loop {               
-                if !self.in_bounds(p.clone()) || self.is_block(p.clone()) {
+            let mut wrap = false;
+            loop {              
+                if !self.in_bounds(p.clone()) || self.is_block(p.clone()) || wrap {
                     break;
                 }
                 size += 1;
-                p = self.next(p, vertical);
+                (p, wrap) = self.next_stop_at_wrap(p, vertical);
             }
             self.spans.push(Span::new(start, size, vertical));
         }
