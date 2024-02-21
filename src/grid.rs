@@ -30,6 +30,15 @@ impl Span {
         Self { start, size, vertical }
     }
 
+    pub fn get_point(&self, i: usize) -> Point {
+        assert!(i < self.size);
+        if self.vertical {
+            Point::new(self.start.row + i, self.start.col)
+        } else {
+            Point::new(self.start.row, self.start.col + i)
+        }
+    }
+
     pub fn to_string(&self) -> String {
         format!("[Start: {}, size: {}, vertical: {}]", self.start.to_string(), self.size, self.vertical)
     }
@@ -94,7 +103,12 @@ impl Grid {
         p.row < self.rows() && p.col < self.cols()
     }
 
-    fn is_block(&self, p: Point) -> bool {
+    fn get_char(&self, p: &Point) -> char {
+        // assert!(self.in_bounds(*p));
+        self.grid[p.row].chars().nth(p.col).unwrap()
+    }
+
+    pub fn is_block(&self, p: Point) -> bool {
         self.grid[p.row].chars().nth(p.col).unwrap() == '.'
     }
 
@@ -107,7 +121,12 @@ impl Grid {
     }
 
     fn get_string(&self, span: &Span) -> String {
-        ""
+        let mut chars = Vec::new();
+        for i in 0..span.size {
+            let p = span.get_point(i);
+            chars.push(self.get_char(&p));
+        }
+        chars.iter().collect()
     }
 
     fn fill_spans(&mut self) {
