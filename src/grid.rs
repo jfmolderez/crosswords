@@ -12,6 +12,10 @@ impl Point {
     pub fn new(row: usize, col: usize) -> Self {
         Self { row, col }
     }
+
+    pub fn to_string(&self) -> String {
+        format!("({}, {})", self.row, self.col)
+    }
 }
 
 #[derive(Debug)]
@@ -25,12 +29,17 @@ impl Span {
     pub fn new(start: Point, size: usize, vertical: bool) -> Self {
         Self { start, size, vertical }
     }
+
+    pub fn to_string(&self) -> String {
+        format!("[Start: {}, size: {}, vertical: {}]", self.start.to_string(), self.size, self.vertical)
+    }
+
 }
 
 #[derive(Debug)]
 pub struct Grid {
     grid: Vec<String>,
-    pub spans: Vec<Span>,
+    spans: Vec<Span>,
 }
 
 impl Grid {
@@ -59,10 +68,6 @@ impl Grid {
         &self.grid[row]
     }
 
-    fn in_bounds(&self, p: Point) -> bool {
-        p.row < self.rows() && p.col < self.cols()
-    }
-
     fn next_stop_at_wrap(&self, p: Point, vertical: bool) -> (Point, bool) {
         let mut wrap = false;
         let mut row = p.row;
@@ -85,7 +90,11 @@ impl Grid {
         (Point::new(row, col), wrap)
     }
 
-    pub fn is_block(&self, p: Point) -> bool {
+    fn in_bounds(&self, p: Point) -> bool {
+        p.row < self.rows() && p.col < self.cols()
+    }
+
+    fn is_block(&self, p: Point) -> bool {
         self.grid[p.row].chars().nth(p.col).unwrap() == '.'
     }
 
@@ -95,6 +104,10 @@ impl Grid {
 
     fn is_letter(&self, p: Point) -> bool {
         self.grid[p.row].chars().nth(p.col).unwrap().is_alphabetic()
+    }
+
+    fn get_string(&self, span: &Span) -> String {
+        ""
     }
 
     fn fill_spans(&mut self) {
@@ -144,6 +157,12 @@ impl Grid {
         println!("Grid size = {} x {}", self.rows(), self.cols());
         for row in &self.grid {
             println!("\t{}", row);
+        }
+    }
+
+    pub fn print_spans(&self) {
+        for span in &self.spans {
+            println!("{}", span.to_string());
         }
     }
 }

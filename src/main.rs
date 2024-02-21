@@ -31,12 +31,11 @@ fn main() {
 
     let p = Point::new(0, 0);
     println!("{:?} : {}", p, start_grid.is_block(p.clone()));
-
-    println!("{:?}", start_grid.spans);
+    start_grid.print_spans();
 
     println!();
     let test_grid = read_grid("./data/test.txt");
-    println!("{:?}", test_grid.spans.len());
+    test_grid.print_spans();
 
 
 }
