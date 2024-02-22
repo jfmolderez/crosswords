@@ -45,10 +45,30 @@ impl Span {
 
 }
 
+#[derive(Default, Debug)]
+pub struct Attr {
+    pub has_letters: bool,
+    pub has_blanks: bool,
+}
+
+impl Attr {
+    pub fn is_empty(&self) -> bool {
+        self.has_blanks && ! self.has_letters
+    }
+
+    pub fn is_partial(&self) -> bool {
+        self.has_blanks && self.has_letters
+    }
+
+    pub fn is_full(&self) -> bool {
+        !self.has_blanks && self.has_letters
+    }
+}
+
 #[derive(Debug)]
 pub struct Grid {
     grid: Vec<String>,
-    spans: Vec<Span>,
+    pub spans: Vec<Span>,
 }
 
 impl Grid {
@@ -112,18 +132,26 @@ impl Grid {
         self.grid[p.row].chars().nth(p.col).unwrap() == '.'
     }
 
+    #[allow(dead_code)]
     fn is_blank(&self, p: Point) -> bool {
         self.grid[p.row].chars().nth(p.col).unwrap() == '-'
     }
 
+    #[allow(dead_code)]
     fn is_letter(&self, p: Point) -> bool {
         self.grid[p.row].chars().nth(p.col).unwrap().is_alphabetic()
     }
 
-    fn get_string(&self, span: &Span) -> String {
+    pub fn get_string(&self, span: &Span, attr: &mut Attr) -> String {
         let mut chars = Vec::new();
         for i in 0..span.size {
             let p = span.get_point(i);
+            let c = self.get_char(&p);
+            if c == '-' {
+                attr.has_blanks = true;
+            } else if c >= 'A' && c <= 'Z' {
+                attr.has_letters = true;
+            }
             chars.push(self.get_char(&p));
         }
         chars.iter().collect()
@@ -181,7 +209,8 @@ impl Grid {
 
     pub fn print_spans(&self) {
         for span in &self.spans {
-            println!("{}", span.to_string());
+            let mut attr = Attr::default();
+            println!("{} {} {}", span.to_string(), self.get_string(&span, &mut attr), attr.is_empty());
         }
     }
 }

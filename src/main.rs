@@ -1,8 +1,83 @@
-use crosswords::grid::{initial_grid, read_grid, Point, Span};
+use crosswords::grid::{read_grid, Grid, Span, Attr};
 use crosswords::library::Library;
 
-fn main() {
 
+#[derive(Debug, Clone)]
+pub struct Slot<'a> {
+    pub span: &'a Span,
+}
+
+impl<'a> Slot<'a> {
+    pub fn new(span: &'a Span) -> Self {
+        Self{span}
+    }
+}
+
+pub struct Solver<'a> {
+    grid : &'a Grid,
+}
+
+impl<'a> Solver<'a> {
+    pub fn new(grid: &'a Grid) -> Self {
+        Self{grid}
+    }
+
+    pub fn solve(&self) {
+        println!("Solving this grid");
+        self.grid.print();
+        self.loop_();
+
+    }
+
+    fn loop_(&self) {
+        println!("loop");
+        let mut empty_slots: Vec<Slot> = Vec::new();
+        let mut partial_slots: Vec<Slot> = Vec::new();
+        let mut full_slots: Vec<Slot> = Vec::new();
+
+        for span in &self.grid.spans {
+            let mut attr = Attr::default();
+            let tmp = self.grid.get_string(&span, &mut attr);
+            if attr.is_empty() {
+                empty_slots.push(Slot::new(span));
+            } else if attr.is_partial() {
+                partial_slots.push(Slot::new(span));
+            } else if attr.is_full() {
+                full_slots.push(Slot::new(span));
+            }
+        }
+        let num_empty = empty_slots.len();
+        let num_partial = partial_slots.len();
+        let num_full = full_slots.len();
+
+        if num_partial == 0 && num_empty == 0 {
+            println!("SOLUTION")
+        }
+        assert!(num_partial > 0);
+        self.commit_slot(partial_slots[0].clone());
+        //println!("loop exit - number of empty slots : {}", empty_slots.len());
+        //println!("loop exit - number of partial slots : {}", partial_slots.len());
+        //println!("loop exit - number of full slots : {}", full_slots.len());
+    }
+
+    fn commit_slot(&self, slot: Slot) {
+        println!("First partial slot : {}", slot.span.to_string());
+    }
+}
+
+fn main() {
+    let grid = read_grid("./data/initial.txt");
+    grid.print_spans();
+
+    let lib: Library = Library::load("./data/lib/top_12000.txt", grid.size());
+    println!("Size of the library = {}", lib.size());
+
+    let solver = Solver::new(&grid);
+    solver.solve();
+
+
+}
+/* 
     let start_grid = initial_grid();
     start_grid.print();
 
@@ -36,9 +111,7 @@ fn main() {
     println!();
     let test_grid = read_grid("./data/test.txt");
     test_grid.print_spans();
-
-
-}
+*/
 
 
     
