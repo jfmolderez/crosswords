@@ -4,22 +4,32 @@ use crosswords::library::Library;
 
 #[derive(Debug, Clone)]
 pub struct Slot<'a> {
-    pub span: &'a Span,
+    span: &'a Span,
+    pattern: String,
 }
 
 impl<'a> Slot<'a> {
-    pub fn new(span: &'a Span) -> Self {
-        Self{span}
+    pub fn new(span: &'a Span, pattern: String) -> Self {
+        Self{span, pattern}
+    }
+
+    pub fn to_string(&self) -> String {
+        format!("{} '{}'", self.span.to_string(), self.pattern)
+    }
+
+    pub fn get_pattern(&self) -> String {
+        self.pattern.clone()
     }
 }
 
 pub struct Solver<'a> {
     grid : &'a Grid,
+    lib: &'a Library,
 }
 
 impl<'a> Solver<'a> {
-    pub fn new(grid: &'a Grid) -> Self {
-        Self{grid}
+    pub fn new(grid: &'a Grid, lib: &'a Library) -> Self {
+        Self{grid, lib}
     }
 
     pub fn solve(&self) {
@@ -39,11 +49,11 @@ impl<'a> Solver<'a> {
             let mut attr = Attr::default();
             let tmp = self.grid.get_string(&span, &mut attr);
             if attr.is_empty() {
-                empty_slots.push(Slot::new(span));
+                empty_slots.push(Slot::new(span, tmp));
             } else if attr.is_partial() {
-                partial_slots.push(Slot::new(span));
+                partial_slots.push(Slot::new(span, tmp));
             } else if attr.is_full() {
-                full_slots.push(Slot::new(span));
+                full_slots.push(Slot::new(span, tmp));
             }
         }
         let num_empty = empty_slots.len();
@@ -54,14 +64,16 @@ impl<'a> Solver<'a> {
             println!("SOLUTION")
         }
         assert!(num_partial > 0);
-        self.commit_slot(partial_slots[0].clone());
+        self.commit_slot(&partial_slots[0]);
         //println!("loop exit - number of empty slots : {}", empty_slots.len());
         //println!("loop exit - number of partial slots : {}", partial_slots.len());
         //println!("loop exit - number of full slots : {}", full_slots.len());
     }
 
-    fn commit_slot(&self, slot: Slot) {
-        println!("First partial slot : {}", slot.span.to_string());
+    fn commit_slot(&self, slot: &Slot) {
+        println!("Committing slot : {}", slot.to_string());
+        println!("Possible word choices for this slot are: ");
+        println!("{:#?}", self.lib.find_word(&slot.get_pattern()));
     }
 }
 
@@ -72,7 +84,7 @@ fn main() {
     let lib: Library = Library::load("./data/lib/top_12000.txt", grid.size());
     println!("Size of the library = {}", lib.size());
 
-    let solver = Solver::new(&grid);
+    let solver = Solver::new(&grid, &lib);
     solver.solve();
 
 

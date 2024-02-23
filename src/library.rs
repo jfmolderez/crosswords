@@ -7,6 +7,14 @@ pub struct Word {
     word: &'static str,
 }
 
+/* 
+impl Word {
+    pub fn to_string(&self) -> String {
+        self.word.to_string()
+    }
+}
+*/
+
 fn read_words(filename: &str, max_size: usize) -> Vec<Word> {
     let mut res: Vec<Word> = Vec::new();
     let file = File::open(filename).expect("File not found!");
