@@ -34,12 +34,17 @@ impl<'a> Solver<'a> {
     pub fn solve(&mut self, grid: &Grid) {
         println!("Solving this grid");
         grid.print();
-        self.loop_(&grid);
+        self.loop_(&grid, 0);
 
     }
 
-    fn loop_(&mut self, grid: &Grid) {
-        println!("loop");
+    fn loop_(&mut self, grid: &Grid, mut depth: u32) {
+        depth += 1;
+        println!("loop - depth = {}", depth);
+        if depth > 6 {
+            println!("Max depth reached");
+            return;
+        }
         let mut empty_slots: Vec<Slot> = Vec::new();
         let mut partial_slots: Vec<Slot> = Vec::new();
         let mut full_slots: Vec<Slot> = Vec::new();
@@ -59,18 +64,20 @@ impl<'a> Solver<'a> {
         let num_partial = partial_slots.len();
         let num_full = full_slots.len();
 
+        println!("loop exit - number of empty slots : {}", empty_slots.len());
+        println!("loop exit - number of partial slots : {}", partial_slots.len());
+        println!("loop exit - number of full slots : {}", full_slots.len());
+
         if num_partial == 0 && num_empty == 0 {
             println!("SOLUTION")
         }
         assert!(num_partial > 0);
         let slot = &partial_slots[0];
-        self.commit_slot(slot, &mut grid.clone());
-        //println!("loop exit - number of empty slots : {}", empty_slots.len());
-        //println!("loop exit - number of partial slots : {}", partial_slots.len());
-        //println!("loop exit - number of full slots : {}", full_slots.len());
+        self.commit_slot(slot, &mut grid.clone(), depth);
+        
     }
 
-    fn commit_slot(&mut self, slot: &Slot, grid: &mut Grid) {
+    fn commit_slot(&mut self, slot: &Slot, grid: &mut Grid, mut depth: u32) {
         println!("Committing slot : {}", slot.to_string());
         // println!("Possible word choices for this slot are: ");
         // println!("{:#?}", self.lib.find_word(&slot.get_pattern()));
@@ -79,6 +86,7 @@ impl<'a> Solver<'a> {
             // println!("{}", words.to_string());
             grid.write_string(&slot.span, String::from(words.words[0].word));
             grid.print();
+            self.loop_(&grid, depth);
         } else {
             println!("No words found for this pattern");
         }  
