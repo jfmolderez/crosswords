@@ -18,7 +18,7 @@ impl Point {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Span {
     start: Point,
     size: usize,
@@ -65,7 +65,7 @@ impl Attr {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Grid {
     grid: Vec<String>,
     pub spans: Vec<Span>,

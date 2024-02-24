@@ -23,31 +23,30 @@ impl<'a> Slot<'a> {
 }
 
 pub struct Solver<'a> {
-    grid : &'a mut Grid,
     lib: &'a Library,
 }
 
 impl<'a> Solver<'a> {
-    pub fn new(grid: &'a mut Grid, lib: &'a Library) -> Self {
-        Self{grid, lib}
+    pub fn new(lib: &'a Library) -> Self {
+        Self{lib}
     }
 
-    pub fn solve(&mut self) {
+    pub fn solve(&mut self, grid: &Grid) {
         println!("Solving this grid");
-        self.grid.print();
-        self.loop_();
+        grid.print();
+        self.loop_(&grid);
 
     }
 
-    fn loop_(&mut self) {
+    fn loop_(&mut self, grid: &Grid) {
         println!("loop");
         let mut empty_slots: Vec<Slot> = Vec::new();
         let mut partial_slots: Vec<Slot> = Vec::new();
         let mut full_slots: Vec<Slot> = Vec::new();
-
-        for span in &self.grid.spans {
+        let spans = grid.spans.clone();
+        for span in &spans {
             let mut attr = Attr::default();
-            let tmp = self.grid.get_string(&span, &mut attr);
+            let tmp = grid.get_string(&span, &mut attr);
             if attr.is_empty() {
                 empty_slots.push(Slot::new(span, tmp));
             } else if attr.is_partial() {
@@ -65,21 +64,21 @@ impl<'a> Solver<'a> {
         }
         assert!(num_partial > 0);
         let slot = &partial_slots[0];
-        self.commit_slot(slot);
+        self.commit_slot(slot, &mut grid.clone());
         //println!("loop exit - number of empty slots : {}", empty_slots.len());
         //println!("loop exit - number of partial slots : {}", partial_slots.len());
         //println!("loop exit - number of full slots : {}", full_slots.len());
     }
 
-    fn commit_slot(&mut self, slot: &Slot) {
+    fn commit_slot(&mut self, slot: &Slot, grid: &mut Grid) {
         println!("Committing slot : {}", slot.to_string());
-        println!("Possible word choices for this slot are: ");
+        // println!("Possible word choices for this slot are: ");
         // println!("{:#?}", self.lib.find_word(&slot.get_pattern()));
         let words = self.lib.find_word(&slot.get_pattern());
         if words.len() > 0 {
             // println!("{}", words.to_string());
-            self.grid.write_string(&slot.span, String::from(words.words[0].word));
-            self.grid.print();
+            grid.write_string(&slot.span, String::from(words.words[0].word));
+            grid.print();
         } else {
             println!("No words found for this pattern");
         }  
@@ -93,8 +92,8 @@ fn main() {
     let lib: Library = Library::load("./data/lib/top_12000.txt", grid.size());
     println!("Size of the library = {}", lib.size());
 
-    let mut solver = Solver::new(&mut grid, &lib);
-    solver.solve();
+    let mut solver = Solver::new(&lib);
+    solver.solve(&mut grid);
 
 
 }
