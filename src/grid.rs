@@ -157,6 +157,17 @@ impl Grid {
         chars.iter().collect()
     }
 
+    pub fn write_string(&mut self, span: &Span, w: String){
+        assert_eq!(span.size, w.len());
+        let mut i = 0;
+        for c in w.chars() {
+            let p = span.get_point(i);
+            assert!(self.in_bounds(p.clone()));
+            self.grid[p.row].replace_range(p.col..=p.col, &c.to_string());
+            i += 1;
+        } 
+    }
+
     fn fill_spans(&mut self) {
         assert!(self.spans.is_empty());
         self.fill_spans_dir(false);

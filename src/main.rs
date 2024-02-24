@@ -23,23 +23,23 @@ impl<'a> Slot<'a> {
 }
 
 pub struct Solver<'a> {
-    grid : &'a Grid,
+    grid : &'a mut Grid,
     lib: &'a Library,
 }
 
 impl<'a> Solver<'a> {
-    pub fn new(grid: &'a Grid, lib: &'a Library) -> Self {
+    pub fn new(grid: &'a mut Grid, lib: &'a Library) -> Self {
         Self{grid, lib}
     }
 
-    pub fn solve(&self) {
+    pub fn solve(&mut self) {
         println!("Solving this grid");
         self.grid.print();
         self.loop_();
 
     }
 
-    fn loop_(&self) {
+    fn loop_(&mut self) {
         println!("loop");
         let mut empty_slots: Vec<Slot> = Vec::new();
         let mut partial_slots: Vec<Slot> = Vec::new();
@@ -64,27 +64,36 @@ impl<'a> Solver<'a> {
             println!("SOLUTION")
         }
         assert!(num_partial > 0);
-        self.commit_slot(&partial_slots[0]);
+        let slot = &partial_slots[0];
+        self.commit_slot(slot);
         //println!("loop exit - number of empty slots : {}", empty_slots.len());
         //println!("loop exit - number of partial slots : {}", partial_slots.len());
         //println!("loop exit - number of full slots : {}", full_slots.len());
     }
 
-    fn commit_slot(&self, slot: &Slot) {
+    fn commit_slot(&mut self, slot: &Slot) {
         println!("Committing slot : {}", slot.to_string());
         println!("Possible word choices for this slot are: ");
-        println!("{:#?}", self.lib.find_word(&slot.get_pattern()));
+        // println!("{:#?}", self.lib.find_word(&slot.get_pattern()));
+        let words = self.lib.find_word(&slot.get_pattern());
+        if words.len() > 0 {
+            // println!("{}", words.to_string());
+            self.grid.write_string(&slot.span, String::from(words.words[0].word));
+            self.grid.print();
+        } else {
+            println!("No words found for this pattern");
+        }  
     }
 }
 
 fn main() {
-    let grid = read_grid("./data/initial.txt");
+    let mut grid = read_grid("./data/initial.txt");
     grid.print_spans();
 
     let lib: Library = Library::load("./data/lib/top_12000.txt", grid.size());
     println!("Size of the library = {}", lib.size());
 
-    let solver = Solver::new(&grid, &lib);
+    let mut solver = Solver::new(&mut grid, &lib);
     solver.solve();
 
 
