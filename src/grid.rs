@@ -70,15 +70,16 @@ impl Attr {
 pub struct Grid {
     grid: Vec<String>,
     pub spans: Vec<Span>,
-    //v_spans: HashMap<&Point, &Span>,
-    //h_spans: HashMap<&Point, &Span>,
+    v_spans: HashMap<Point, &Span>,
+    h_spans: HashMap<Point, &Span>,
 }
 
 impl Grid {
     pub fn new(grid: Vec<String>) -> Self {
         let spans = Vec::new();
-        let mut gr = Self { grid, spans };
-        let points = HashMap::new();
+        let v_spans = HashMap::new();
+        let h_spans = HashMap::new();
+        let mut gr = Self { grid, spans, v_spans, h_spans};
         gr.check();
 
         gr.fill_spans();        
@@ -161,6 +162,14 @@ impl Grid {
         chars.iter().collect()
     }
 
+    pub fn get_span(&self, p: Point, vertical: bool) -> Option<&Span> {
+        if vertical {
+            self.v_spans.get(&p)
+        } else {
+            self.h_spans.get(&p)
+        }
+    }
+
     pub fn write_string(&mut self, span: &Span, w: String){
         assert_eq!(span.size, w.len());
         let mut i = 0;
@@ -193,14 +202,23 @@ impl Grid {
             let start = p.clone();
             let mut size = 0;
             let mut wrap = false;
+            let mut points = Vec::new();
             loop {              
                 if !self.in_bounds(p.clone()) || self.is_block(p.clone()) || wrap {
                     break;
                 }
+                points.push(p.clone());
                 size += 1;
                 (p, wrap) = self.next_stop_at_wrap(p, vertical);
             }
             self.spans.push(Span::new(start, size, vertical));
+            for p in points {
+                if vertical {
+                    self.v_spans.insert(p, &self.spans.last().unwrap());
+                } else {
+                    self.h_spans.insert(p, &self.spans.last().unwrap());
+                }
+            }
         }
     }
 

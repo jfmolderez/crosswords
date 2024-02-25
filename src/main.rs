@@ -34,17 +34,27 @@ impl<'a> Solver<'a> {
     pub fn solve(&mut self, grid: &Grid) {
         println!("Solving this grid");
         grid.print();
-        self.loop_(&grid, 0);
-
+        let mut solutions: Vec<Grid> = Vec::new();
+        self.loop_(&grid, 0, &mut solutions);
+        for sol in &solutions {
+            sol.print();
+        }
     }
 
-    fn loop_(&mut self, grid: &Grid, mut depth: u32) {
+    fn loop_(&mut self, grid: &Grid, mut depth: u32, solutions: &mut Vec<Grid>) {
         depth += 1;
-        //println!("loop - depth = {}", depth);
-        //if depth > 2 {
-        //    println!("Max depth reached");
-        //    return;
-        //}
+        /*
+        println!("loop - depth = {}", depth);
+        if depth > 4 {
+           println!("Max depth reached");
+            return;
+        }
+        */
+        if solutions.len() > 0 {
+            println!("Solution found - exiting loop");
+            return;
+        }
+
         let mut empty_slots: Vec<Slot> = Vec::new();
         let mut partial_slots: Vec<Slot> = Vec::new();
         let mut full_slots: Vec<Slot> = Vec::new();
@@ -81,15 +91,16 @@ impl<'a> Solver<'a> {
         if num_partial == 0 && num_empty == 0 {
             println!("SOLUTION");
             grid.print();
+            solutions.push(grid.clone());
             return;
         }
         assert!(num_partial > 0);
         let slot = &partial_slots[0];
-        self.commit_slot(slot, &mut grid.clone(), depth);
+        self.commit_slot(slot, &mut grid.clone(), depth, solutions);
         
     }
 
-    fn commit_slot(&mut self, slot: &Slot, grid: &mut Grid, depth: u32) {
+    fn commit_slot(&mut self, slot: &Slot, grid: &mut Grid, depth: u32, solutions: &mut Vec<Grid>) {
         // println!("Committing slot : {}", slot.to_string());
         // println!("Possible word choices for this slot are: ");
         // println!("{:#?}", self.lib.find_word(&slot.get_pattern()));
@@ -98,8 +109,14 @@ impl<'a> Solver<'a> {
             for wrd in &words.words {
                 //println!("Committing '{}'", wrd.word);
                 grid.write_string(&slot.span, String::from(wrd.word));
+                // TODO :
+                // For each point in the span, check that if the span in the other direction
+                // is also a valid word. a valid word means that it is in the library or that it is a
+                // partial word that can be extended to a valid word. If not then we need to backtrack.
+
+
                 //grid.print();
-                self.loop_(&grid, depth);
+                self.loop_(&grid, depth, solutions);
             }    
         } else {
             // println!("No words found for this pattern");
