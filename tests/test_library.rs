@@ -17,9 +17,9 @@ fn test_get_word() {
 #[test]
 fn test_is_word() {
     let library = Library::load("./data/lib/top_12000.txt", 7);
-    assert!(library.is_word("THANKS".to_string()));
-    assert!(library.is_word("THANK".to_string()));
-    assert!(!library.is_word("THANKKK".to_string()))
+    assert!(library.is_word("THANKS"));
+    assert!(library.is_word("THANK"));
+    assert!(!library.is_word("THANKKK"))
 }
 
 

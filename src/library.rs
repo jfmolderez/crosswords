@@ -130,10 +130,10 @@ impl Library {
         res
     }
 
-    pub fn is_word(&self, word: String) -> bool {
+    pub fn is_word(&self, word: &str) -> bool {
         let mut res = false;
         for w in self.words.words.iter() {
-            if w.word.to_string() == word {
+            if w.word.to_string() == word.to_string() {
                 res = true;
                 break;
             }

@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::cmp;
+use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
 pub struct Point {
@@ -69,12 +70,15 @@ impl Attr {
 pub struct Grid {
     grid: Vec<String>,
     pub spans: Vec<Span>,
+    //v_spans: HashMap<&Point, &Span>,
+    //h_spans: HashMap<&Point, &Span>,
 }
 
 impl Grid {
     pub fn new(grid: Vec<String>) -> Self {
         let spans = Vec::new();
         let mut gr = Self { grid, spans };
+        let points = HashMap::new();
         gr.check();
 
         gr.fill_spans();        

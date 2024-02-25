@@ -40,11 +40,11 @@ impl<'a> Solver<'a> {
 
     fn loop_(&mut self, grid: &Grid, mut depth: u32) {
         depth += 1;
-        println!("loop - depth = {}", depth);
-        if depth > 6 {
-            println!("Max depth reached");
-            return;
-        }
+        //println!("loop - depth = {}", depth);
+        //if depth > 2 {
+        //    println!("Max depth reached");
+        //    return;
+        //}
         let mut empty_slots: Vec<Slot> = Vec::new();
         let mut partial_slots: Vec<Slot> = Vec::new();
         let mut full_slots: Vec<Slot> = Vec::new();
@@ -62,14 +62,26 @@ impl<'a> Solver<'a> {
         }
         let num_empty = empty_slots.len();
         let num_partial = partial_slots.len();
-        let num_full = full_slots.len();
+        let _num_full = full_slots.len();
 
-        println!("loop exit - number of empty slots : {}", empty_slots.len());
-        println!("loop exit - number of partial slots : {}", partial_slots.len());
-        println!("loop exit - number of full slots : {}", full_slots.len());
+        //println!("loop exit - number of empty slots : {}", empty_slots.len());
+        //println!("loop exit - number of partial slots : {}", partial_slots.len());
+        //println!("loop exit - number of full slots : {}", full_slots.len());
+
+        // need to check that all words so far are valid!
+        for slot in &full_slots {
+            let word = grid.get_string(&slot.span, &mut Attr::default());
+            //println!("Checking word: {}", word);
+            if !self.lib.is_word(&word) {
+                //println!("Invalid word found: {}", word);
+                return;
+            }
+        }
 
         if num_partial == 0 && num_empty == 0 {
-            println!("SOLUTION")
+            println!("SOLUTION");
+            grid.print();
+            return;
         }
         assert!(num_partial > 0);
         let slot = &partial_slots[0];
@@ -77,18 +89,20 @@ impl<'a> Solver<'a> {
         
     }
 
-    fn commit_slot(&mut self, slot: &Slot, grid: &mut Grid, mut depth: u32) {
-        println!("Committing slot : {}", slot.to_string());
+    fn commit_slot(&mut self, slot: &Slot, grid: &mut Grid, depth: u32) {
+        // println!("Committing slot : {}", slot.to_string());
         // println!("Possible word choices for this slot are: ");
         // println!("{:#?}", self.lib.find_word(&slot.get_pattern()));
         let words = self.lib.find_word(&slot.get_pattern());
         if words.len() > 0 {
-            // println!("{}", words.to_string());
-            grid.write_string(&slot.span, String::from(words.words[0].word));
-            grid.print();
-            self.loop_(&grid, depth);
+            for wrd in &words.words {
+                //println!("Committing '{}'", wrd.word);
+                grid.write_string(&slot.span, String::from(wrd.word));
+                //grid.print();
+                self.loop_(&grid, depth);
+            }    
         } else {
-            println!("No words found for this pattern");
+            // println!("No words found for this pattern");
         }  
     }
 }
