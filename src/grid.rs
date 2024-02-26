@@ -154,7 +154,8 @@ impl Grid {
             let c = self.get_char(&p);
             if c == '-' {
                 attr.has_blanks = true;
-            } else if c >= 'A' && c <= 'Z' {
+            }
+            if c >= 'A' && c <= 'Z' {
                 attr.has_letters = true;
             }
             chars.push(self.get_char(&p));

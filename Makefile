@@ -5,7 +5,7 @@ lint:
 	cargo clippy --quiet
 
 test:
-	cargo test --all-features
+	cargo test -- --nocapture
 
 run: 
 	cargo run
