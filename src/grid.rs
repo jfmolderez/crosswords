@@ -3,7 +3,7 @@ use std::io::{BufRead, BufReader};
 use std::cmp;
 use std::collections::HashMap;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct Point {
     row: usize,
     col: usize,
@@ -22,8 +22,8 @@ impl Point {
 #[derive(Debug, Clone)]
 pub struct Span {
     start: Point,
-    size: usize,
-    vertical: bool, // false = horizontal, true = vertical
+    pub size: usize,
+    pub vertical: bool, // false = horizontal, true = vertical
 }
 
 impl Span {
@@ -70,8 +70,8 @@ impl Attr {
 pub struct Grid {
     grid: Vec<String>,
     pub spans: Vec<Span>,
-    v_spans: HashMap<Point, &Span>,
-    h_spans: HashMap<Point, &Span>,
+    v_spans: HashMap<Point, Span>,
+    h_spans: HashMap<Point, Span>,
 }
 
 impl Grid {
@@ -162,11 +162,11 @@ impl Grid {
         chars.iter().collect()
     }
 
-    pub fn get_span(&self, p: Point, vertical: bool) -> Option<&Span> {
+    pub fn get_span(&self, p: Point, vertical: bool) -> Span {
         if vertical {
-            self.v_spans.get(&p)
+            self.v_spans.get(&p).unwrap().clone()
         } else {
-            self.h_spans.get(&p)
+            self.h_spans.get(&p).unwrap().clone()
         }
     }
 
@@ -214,9 +214,9 @@ impl Grid {
             self.spans.push(Span::new(start, size, vertical));
             for p in points {
                 if vertical {
-                    self.v_spans.insert(p, &self.spans.last().unwrap());
+                    self.v_spans.insert(p, self.spans.last().unwrap().clone());
                 } else {
-                    self.h_spans.insert(p, &self.spans.last().unwrap());
+                    self.h_spans.insert(p, self.spans.last().unwrap().clone());
                 }
             }
         }

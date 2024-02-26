@@ -34,14 +34,11 @@ impl<'a> Solver<'a> {
     pub fn solve(&mut self, grid: &Grid) {
         println!("Solving this grid");
         grid.print();
-        let mut solutions: Vec<Grid> = Vec::new();
-        self.loop_(&grid, 0, &mut solutions);
-        for sol in &solutions {
-            sol.print();
-        }
+
+        self.loop_(&grid, 0);
     }
 
-    fn loop_(&mut self, grid: &Grid, mut depth: u32, solutions: &mut Vec<Grid>) {
+    fn loop_(&mut self, grid: &Grid, mut depth: u32) {
         depth += 1;
         /*
         println!("loop - depth = {}", depth);
@@ -50,10 +47,7 @@ impl<'a> Solver<'a> {
             return;
         }
         */
-        if solutions.len() > 0 {
-            println!("Solution found - exiting loop");
-            return;
-        }
+
 
         let mut empty_slots: Vec<Slot> = Vec::new();
         let mut partial_slots: Vec<Slot> = Vec::new();
@@ -79,6 +73,7 @@ impl<'a> Solver<'a> {
         //println!("loop exit - number of full slots : {}", full_slots.len());
 
         // need to check that all words so far are valid!
+        /* 
         for slot in &full_slots {
             let word = grid.get_string(&slot.span, &mut Attr::default());
             //println!("Checking word: {}", word);
@@ -87,39 +82,59 @@ impl<'a> Solver<'a> {
                 return;
             }
         }
+        */
 
         if num_partial == 0 && num_empty == 0 {
             println!("SOLUTION");
             grid.print();
-            solutions.push(grid.clone());
             return;
         }
         assert!(num_partial > 0);
         let slot = &partial_slots[0];
-        self.commit_slot(slot, &mut grid.clone(), depth, solutions);
-        
+        self.commit_slot(slot, &mut grid.clone(), depth); 
+
     }
 
-    fn commit_slot(&mut self, slot: &Slot, grid: &mut Grid, depth: u32, solutions: &mut Vec<Grid>) {
-        // println!("Committing slot : {}", slot.to_string());
-        // println!("Possible word choices for this slot are: ");
-        // println!("{:#?}", self.lib.find_word(&slot.get_pattern()));
+    fn commit_slot(&mut self, slot: &Slot, grid: &mut Grid, depth: u32) {
+        println!("Committing slot : {}", slot.to_string());
+        println!("Possible word choices for this slot are: ");
+        println!("{:#?}", self.lib.find_word(&slot.get_pattern()));
         let words = self.lib.find_word(&slot.get_pattern());
         if words.len() > 0 {
             for wrd in &words.words {
-                //println!("Committing '{}'", wrd.word);
+                println!("Attempt to commit '{}'", wrd.word);
                 grid.write_string(&slot.span, String::from(wrd.word));
-                // TODO :
                 // For each point in the span, check that if the span in the other direction
                 // is also a valid word. a valid word means that it is in the library or that it is a
                 // partial word that can be extended to a valid word. If not then we need to backtrack.
+                let mut valid = true;
+                for i in 0..slot.span.size {
+                    let p = slot.span.get_point(i);
+                    let other_span = grid.get_span(p, !slot.span.vertical);
+                    let mut attr = Attr::default();
+                    let s = grid.get_string(&other_span, &mut attr);
+                    if attr.is_partial() {
+                        let words = self.lib.find_word(&s);
+                        if words.len() == 0 {
+                            // println!("Invalid word found: {}", s);
+                            valid = false;
+                            break;
+                        }
+                    }
+                    if attr.is_full() {
+                        if !self.lib.is_word(&s) {
+                            // println!("Invalid word found: {}", s);
+                            valid = false;
+                            break:
+                        }
+                    }
+                }
+                //////////////////
+                println!("Word '{}' committed", wrd.word);
 
-
-                //grid.print();
-                self.loop_(&grid, depth, solutions);
+                grid.print();
+                self.loop_(&grid, depth);
             }    
-        } else {
-            // println!("No words found for this pattern");
         }  
     }
 }
