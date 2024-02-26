@@ -1,4 +1,6 @@
-use crosswords::grid::{read_grid, Grid, Span, Attr};
+use core::panic;
+
+use crosswords::grid::{self, read_grid, Attr, Grid, Span};
 use crosswords::library::Library;
 
 
@@ -24,18 +26,20 @@ impl<'a> Slot<'a> {
 
 pub struct Solver<'a> {
     lib: &'a Library,
+    pub solutions: Vec<Grid>,
 }
 
 impl<'a> Solver<'a> {
     pub fn new(lib: &'a Library) -> Self {
-        Self{lib}
+        let solutions: Vec<Grid> = Vec::new();
+        Self{lib, solutions}
     }
 
-    pub fn solve(&mut self, grid: &Grid) {
+    pub fn solve(&mut self, grid: &'a Grid) {
         println!("Solving this grid");
         grid.print();
 
-        self.loop_(&grid, 0);
+        self.loop_( &grid, 0);
     }
 
     fn loop_(&mut self, grid: &Grid, mut depth: u32) {
@@ -85,9 +89,11 @@ impl<'a> Solver<'a> {
         */
 
         if num_partial == 0 && num_empty == 0 {
-            println!("SOLUTION");
+            println!("FOUND A SOLUTION");
+            self.solutions.push(grid.clone());
             grid.print();
-            return;
+
+            // return;
         }
         assert!(num_partial > 0);
         let slot = &partial_slots[0];
@@ -125,11 +131,14 @@ impl<'a> Solver<'a> {
                         if !self.lib.is_word(&s) {
                             // println!("Invalid word found: {}", s);
                             valid = false;
-                            break:
+                            break;
                         }
                     }
                 }
-                //////////////////
+                if !valid {
+                    println!("Word '{}' is not valid", wrd.word);
+                    continue;
+                }
                 println!("Word '{}' committed", wrd.word);
 
                 grid.print();
@@ -148,6 +157,10 @@ fn main() {
 
     let mut solver = Solver::new(&lib);
     solver.solve(&mut grid);
+
+    for grid in &solver.solutions {
+        grid.print();
+    }
 
 
 }
