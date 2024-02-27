@@ -108,7 +108,7 @@ impl<'a> Solver<'a> {
         }
 
         assert!(num_partial > 0);
-        // TODO : optimiztion here to pick the slot with the fewest possible words
+        // TODO : optimiztion here to pick the slot with the fewest possible wordsyyyyyyg
         let slot = &partial_slots[0];  // pick the first partial slot
         self.commit_slot(slot, &mut grid.clone(), depth); 
 

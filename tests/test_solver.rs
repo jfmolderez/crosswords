@@ -34,7 +34,6 @@ fn test_solver_mary() {
     let mut solver = Solver::new(&lib);
     solver.solve(&mut grid);
 
-    solver.solutions[0].print();
     assert_eq!(solver.solutions.len(), 0);   
 }
 
