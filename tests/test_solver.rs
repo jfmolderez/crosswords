@@ -22,8 +22,32 @@ fn test_solver_duplicates() {
     solver.solve(&mut grid);
 
     solver.solutions[0].print();
-    assert_eq!(solver.solutions.len(), 912);
+    assert_eq!(solver.solutions.len(), 388);
     
+}
+
+#[test]
+fn test_solver_mary() {
+    let mut grid = read_grid("./data/mary.txt");
+    let lib: Library = Library::load("./data/lib/top_12000.txt", grid.size());
+
+    let mut solver = Solver::new(&lib);
+    solver.solve(&mut grid);
+
+    solver.solutions[0].print();
+    assert_eq!(solver.solutions.len(), 0);   
+}
+
+#[test]
+fn test_solver_step() {
+    let mut grid = read_grid("./data/step.txt");
+    let lib: Library = Library::load("./data/lib/top_12000.txt", grid.size());
+
+    let mut solver = Solver::new(&lib);
+    solver.solve(&mut grid);
+
+    solver.solutions[0].print();
+    assert_eq!(solver.solutions.len(), 129);   
 }
 
 

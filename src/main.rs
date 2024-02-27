@@ -5,7 +5,7 @@ use crosswords::solver::Solver;
 
 
 fn main() {
-    let mut grid = read_grid("./data/initial.txt");
+    let mut grid = read_grid("./data/step.txt");
     // grid.print_spans();
 
     let lib: Library = Library::load("./data/lib/top_12000.txt", grid.size());

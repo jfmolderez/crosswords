@@ -1,5 +1,6 @@
 use crate::grid::{ Grid, Span, Attr};
 use crate::library::Library;
+use std::collections::HashSet;
 
 #[derive(Debug, Clone)]
 pub struct Slot<'a> {
@@ -85,6 +86,17 @@ impl<'a> Solver<'a> {
         }
         */
 
+        // need to check that all words are unique
+        let mut words: HashSet<String> = HashSet::new();
+        for slot in &full_slots {
+            let word = grid.get_string(&slot.span, &mut Attr::default());
+            if words.contains(&word) {
+                //println!("Duplicate word found: {}", word);
+                return;
+            }
+            words.insert(word);
+        }
+
         if num_partial == 0 && num_empty == 0 {
             // println!("FOUND A SOLUTION");
             self.solutions.push(grid.clone());
@@ -96,7 +108,8 @@ impl<'a> Solver<'a> {
         }
 
         assert!(num_partial > 0);
-        let slot = &partial_slots[0];
+        // TODO : optimiztion here to pick the slot with the fewest possible words
+        let slot = &partial_slots[0];  // pick the first partial slot
         self.commit_slot(slot, &mut grid.clone(), depth); 
 
     }
