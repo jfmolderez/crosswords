@@ -14,7 +14,8 @@
 				"rust-lang.rust-analyzer",
 				"GitHub.copilot",
 				"ms-vscode.makefile-tools",
-				"github.vscode-github-actions"
+				"github.vscode-github-actions",
+				"ms-azuretools.vscode-docker"
 			]
 		}
 	}
