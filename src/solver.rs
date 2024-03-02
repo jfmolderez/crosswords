@@ -22,6 +22,7 @@ impl<'a> Slot<'a> {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct Solver<'a> {
     lib: &'a Library,
     pub solutions: Vec<Grid>,
@@ -108,10 +109,41 @@ impl<'a> Solver<'a> {
         }
 
         assert!(num_partial > 0);
-        // TODO : optimiztion here to pick the slot with the fewest possible wordsyyyyyyg
-        let slot = &partial_slots[0];  // pick the first partial slot
+        // TODO : optimiztion here to pick the slot with the fewest possible words
+        // let slot = &partial_slots[0];  // pick the first partial slot
+        let slot = Self::select_slot(&partial_slots, self.lib);
+    
         self.commit_slot(slot, &mut grid.clone(), depth); 
 
+    }
+
+    fn select_slot<'b, 'c>(slots: &'b Vec<Slot>, lib: &'c Library) -> &'b Slot<'b> {
+        
+        // map the slots to the number of possible words
+        let mut num_words: Vec<(usize, &Slot)> = Vec::new();
+        for slot in slots {
+            let words = lib.find_word(&slot.get_pattern());
+            num_words.push((words.words.len(), slot));
+        }
+        // sort the slots by the number of possible words
+        num_words.sort_by(|a, b| a.0.cmp(&b.0));
+        // get a vector of slots with the fewest possible words
+        let mut fewest_words: Vec<&Slot> = Vec::new();
+        let fewest = num_words[0].0;
+        for (num, slot) in num_words {
+            if num == fewest {
+                fewest_words.push(slot);
+            }
+        }
+        // select the shortest slot
+        let mut shortest: &Slot<'b> = fewest_words[0];
+        for slot in fewest_words {
+            if slot.span.size < shortest.span.size {
+                shortest = slot;
+            }
+        }
+        shortest
+    
     }
 
     fn commit_slot(&mut self, slot: &Slot, grid: &mut Grid, depth: u32) {
